@@ -13,7 +13,21 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "webhook"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itkq/hook-relay.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "author": "Takuya Kosugiyama",
   "license": "MIT",
   "packageManager": "pnpm@9.15.1+sha256.9e534e70afef06374f6126b44bda5760947135ce16a30aef1010e965fb7e3e3e",
