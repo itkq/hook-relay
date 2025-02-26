@@ -13,7 +13,9 @@ const program = new Command();
 program
   .addOption(new Option('--port <number>', 'Port to listen on').default(3000).env('PORT'))
   .addOption(new Option('--token <string>', 'Authentication token').env('AUTH_TOKEN'))
-  .option('--log-level <string>', 'Log level', 'info');
+  .option('--log-level <string>', 'Log level', 'info')
+  .name("hook-relay-server");
+
 program.parse(process.argv);
 
 const options = program.opts() as CLIOptions;

@@ -21,7 +21,8 @@ program
   .addOption(new Option('--token <string>', 'Authentication token').env('AUTH_TOKEN'))
   .option('--path <string>', 'Path to use')
   .option('--log-level <string>', 'Log level', 'info')
-  .option('--filter-body-regex <string>', 'Filter body regex');
+  .option('--filter-body-regex <string>', 'Filter body regex')
+  .name("hook-relay-client");
 
 program.parse(process.argv);
 
