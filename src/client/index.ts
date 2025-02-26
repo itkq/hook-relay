@@ -11,6 +11,7 @@ interface CLIOptions {
   token?: string;
   path?: string;
   filterBodyRegex?: string;
+  reconnectIntervalMs: number;
 }
 
 const program = new Command();
@@ -22,13 +23,12 @@ program
   .option('--path <string>', 'Path to use')
   .option('--log-level <string>', 'Log level', 'info')
   .option('--filter-body-regex <string>', 'Filter body regex')
+  .option('--reconnect-interval-ms <number>', 'Reconnect interval in milliseconds', '1000')
   .name("hook-relay-client");
 
 program.parse(process.argv);
 
 const options = program.opts() as CLIOptions;
-
-const RECONNECT_INTERVAL_MS = 3000;
 
 const sleepMs = (ms: number): Promise<void> =>
   new Promise(resolve => {
@@ -76,6 +76,6 @@ process.on('SIGTERM', () => {
     } catch (err) {
       logger.error(err, "Connection terminated due to error");
     }
-    await sleepMs(RECONNECT_INTERVAL_MS);
+    await sleepMs(options.reconnectIntervalMs);
   }
 })();
