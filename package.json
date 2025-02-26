@@ -1,0 +1,39 @@
+{
+  "name": "hook-relay",
+  "version": "0.1.0",
+  "description": "Relay for webhook events",
+  "main": "dist/server/index.js",
+  "bin": {
+    "hook-relay-server": "./dist/server/index.js",
+    "hook-relay-client": "./dist/client/index.js"
+  },
+  "scripts": {
+    "dev:server": "nodemon --exec ts-node src/server/index.ts -- --port 3000 --token token",
+    "dev:client": "nodemon --exec ts-node src/client/index.ts -- --server-endpoint ws://localhost:3000 --forward-endpoint http://localhost:9000 --token token",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Takuya Kosugiyama",
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.1+sha256.9e534e70afef06374f6126b44bda5760947135ce16a30aef1010e965fb7e3e3e",
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.13.5",
+    "@types/ws": "^8.5.14",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@types/express": "4.17.21",
+    "async-mutex": "^0.5.0",
+    "axios": "^1.7.9",
+    "commander": "^13.1.0",
+    "express": "4.21.2",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "ws": "^8.18.1"
+  }
+}
