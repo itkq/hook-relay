@@ -67,6 +67,7 @@ process.on('SIGTERM', () => {
         serverEndpoint: options.serverEndpoint,
         forwardEndpoint: options.forwardEndpoint,
         path: options.path,
+        filterBodyRegex: options.filterBodyRegex,
       });
       if (isShuttingDown) {
         break;
