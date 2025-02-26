@@ -71,11 +71,11 @@ export async function connectWebSocket({
     });
 
     ws.on('close', (code: number) => {
+      // established connection
       if (code === 1000) {
-        // server closed
         return resolve();
       } else if (code === 1006) {
-        logger.warn("Failed to connect server, reconnecting...");
+        logger.warn("Connection closed");
         return resolve();
       } else if (code === 4001) {
         logger.error("Authentication failed, not reconnecting");
