@@ -15,6 +15,31 @@ With hook-relay, you can maintain just one Slack App and endpoint while allowing
 
 ## Usage
 
+```
+$ hook-relay-server --help
+Usage: hook-relay-server [options]
+
+Options:
+  --port <number>       Port to listen on (default: 3000, env: PORT)
+  --token <string>      Authentication token (env: AUTH_TOKEN)
+  --log-level <string>  Log level (default: "info")
+  -h, --help            display help for command
+```
+
+```
+$ hook-relay-client --help
+Usage: hook-relay-client [options]
+
+Options:
+  --server-endpoint <string>    Server endpoint URL
+  --forward-endpoint <string>   Forward endpoint URL
+  --token <string>              Authentication token (env: AUTH_TOKEN)
+  --path <string>               Path to use
+  --log-level <string>          Log level (default: "info")
+  --filter-body-regex <string>  Filter body regex
+  -h, --help                    display help for command
+```
+
 ## License
 
 [MIT](LICENSE)
