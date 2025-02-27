@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import WebSocket, { ClientOptions } from 'ws';
 import axios from 'axios';
 import { isWebSocketErrorEvent, isWebSocketHTTPEvent, WebSocketEvent, WebSocketHTTPResponse } from '../types';
 import { IncomingHttpHeaders } from 'http';
@@ -7,6 +7,7 @@ import { Logger } from 'pino';
 let activeWs: WebSocket | null = null;
 
 export async function connectWebSocket({
+  clientId,
   logger,
   serverEndpoint,
   forwardEndpoint,
@@ -14,15 +15,15 @@ export async function connectWebSocket({
   path,
   filterBodyRegex,
 }: {
+  clientId: string;
   logger: Logger;
   serverEndpoint: string;
   forwardEndpoint: string;
   bearerToken?: string;
   path?: string;
   filterBodyRegex?: string;
-}): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const clientId = crypto.randomUUID();
+}): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     const wsParams = new URLSearchParams({
       clientId,
       ...(path ? { path } : {}),
@@ -75,10 +76,10 @@ export async function connectWebSocket({
     ws.on('close', (code: number) => {
       // established connection
       if (code === 1000) {
-        return resolve();
+        return resolve(clientId);
       } else if (code === 1006) {
         logger.warn("Connection closed");
-        return resolve();
+        return resolve(clientId);
       } else if (code === 4001) {
         logger.error("Authentication failed, not reconnecting");
         return reject(new Error("Authentication failed"));
@@ -90,7 +91,7 @@ export async function connectWebSocket({
         return reject(new Error("No UUID provided"));
       }
       logger.info(`Disconnected from the server with code: ${code}`);
-      return resolve();
+      return resolve(clientId);
     });
 
     ws.on('error', (err: unknown) => {
