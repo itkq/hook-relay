@@ -45,7 +45,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
 } {
   const app = express();
 
-  app.get('/health', (req: Request, res: Response) => {
+  app.get('/health', (_req: Request, res: Response) => {
     res.send('OK');
   });
 

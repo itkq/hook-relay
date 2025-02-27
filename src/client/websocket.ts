@@ -96,6 +96,17 @@ export async function connectWebSocket({
 
     ws.on('error', (err: unknown) => {
       ws.close();
+      if (err && typeof err === 'object') {
+        const error = err as any;
+        if (error.code === 'ECONNREFUSED') {
+          logger.error(`Connection refused to ${serverEndpoint}. Server may be down.`);
+        } else {
+          logger.error(err, "WebSocket error");
+        }
+        return resolve(clientId); // resolve the promise to reconnect
+      } else {
+        logger.error(err, "Unknown WebSocket error");
+      }
       return reject(err);
     });
   });

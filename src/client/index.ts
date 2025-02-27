@@ -95,6 +95,7 @@ process.on('SIGTERM', () => {
       logger.info("Attempting to reconnect...");
     } catch (err) {
       logger.error(err, "Connection terminated due to error");
+      process.exit(1);
     }
     await sleepMs(options.reconnectIntervalMs);
   }
