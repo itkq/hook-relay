@@ -69,7 +69,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
       ws.close(4004, 'No clientId provided');
       return;
     }
-    if (authenticator && !authenticator.authenticate(query)) {
+    if (authenticator && !authenticator.authenticate(req as unknown as Request)) { // FIXME
       ws.close(4001, 'Authentication failed');
       return;
     }

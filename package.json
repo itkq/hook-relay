@@ -8,8 +8,8 @@
     "hook-relay-client": "./dist/client/index.js"
   },
   "scripts": {
-    "dev:server": "nodemon --exec ts-node src/server/index.ts -- --port 3000 --token token",
-    "dev:client": "nodemon --exec ts-node src/client/index.ts -- --server-endpoint ws://localhost:3000 --forward-endpoint http://localhost:9000 --token token",
+    "dev:server": "nodemon --exec ts-node src/server/index.ts -- --port 3000 --bearer-token token",
+    "dev:client": "nodemon --exec ts-node src/client/index.ts -- --server-endpoint ws://localhost:3000 --forward-endpoint http://localhost:9000 --bearer-token token",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

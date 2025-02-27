@@ -5,21 +5,21 @@ import { createLogger, LogLevel } from '../logger';
 
 interface CLIOptions {
   port?: number;
-  token?: string;
+  bearerToken?: string;
   logLevel?: LogLevel;
 }
 
 const program = new Command();
 program
   .addOption(new Option('--port <number>', 'Port to listen on').default(3000).env('PORT'))
-  .addOption(new Option('--token <string>', 'Authentication token').env('AUTH_TOKEN'))
+  .addOption(new Option('--bearer-token <string>', 'Bearer token').env('BEARER_TOKEN'))
   .option('--log-level <string>', 'Log level', 'info')
   .name("hook-relay-server");
 
 program.parse(process.argv);
 
 const options = program.opts() as CLIOptions;
-const authenticator = options.token ? getAuthenticator('fixed-token', { validToken: options.token }) : null;
+const authenticator = options.bearerToken ? getAuthenticator('bearer-token', { token: options.bearerToken }) : null;
 
 const logger = createLogger('hook-relay-server', options.logLevel);
 

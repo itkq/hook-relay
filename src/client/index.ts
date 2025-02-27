@@ -8,7 +8,7 @@ interface CLIOptions {
   logLevel: LogLevel;
   serverEndpoint: string;
   forwardEndpoint: string;
-  token?: string;
+  bearerToken?: string;
   path?: string;
   filterBodyRegex?: string;
   reconnectIntervalMs: number;
@@ -19,7 +19,7 @@ const program = new Command();
 program
   .requiredOption('--server-endpoint <string>', 'Server endpoint URL')
   .requiredOption('--forward-endpoint <string>', 'Forward endpoint URL')
-  .addOption(new Option('--token <string>', 'Authentication token').env('AUTH_TOKEN'))
+  .addOption(new Option('--bearer-token <string>', 'Bearer token').env('BEARER_TOKEN'))
   .option('--path <string>', 'Path to use')
   .option('--log-level <string>', 'Log level', 'info')
   .option('--filter-body-regex <string>', 'Filter body regex')
@@ -63,7 +63,7 @@ process.on('SIGTERM', () => {
     try {
       await connectWebSocket({
         logger,
-        token: options.token,
+        bearerToken: options.bearerToken,
         serverEndpoint: options.serverEndpoint,
         forwardEndpoint: options.forwardEndpoint,
         path: options.path,

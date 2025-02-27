@@ -1,34 +1,35 @@
+import { Request } from 'express';
 export interface IAuthenticator {
-  authenticate(query: URLSearchParams): boolean;
+  authenticate(req: Request): boolean
 }
 
-class FixedTokenAuthenticator implements IAuthenticator {
-  private validToken: string;
+class BearerTokenAuthenticator implements IAuthenticator {
+  private token: string;
 
-  constructor(options: { validToken?: string }) {
-    this.validToken = options.validToken || '';
+  constructor(options: { token: string }) {
+    this.token = options.token;
   }
 
-  authenticate(query: URLSearchParams): boolean {
-    const token = query.get('token');
-    return token === this.validToken;
+  authenticate(req: Request): boolean {
+    const token = req.headers.authorization?.replace('Bearer ', '').trim();
+    return token === this.token;
   }
 }
 
-type AuthenticatorKind = 'fixed-token';
+type AuthenticatorKind = 'bearer-token';
 
 type AuthenticatorMap = {
   [key in AuthenticatorKind]: new (options: any) => IAuthenticator;
 };
 
 const authenticators: AuthenticatorMap = {
-  "fixed-token": FixedTokenAuthenticator,
+  "bearer-token": BearerTokenAuthenticator,
 };
 
 export function getAuthenticator(name: AuthenticatorKind, options: any): IAuthenticator {
   const AuthenticatorClass = authenticators[name];
   if (!AuthenticatorClass) {
-    return new FixedTokenAuthenticator(options); // default
+    return new BearerTokenAuthenticator(options); // default
   }
   return new AuthenticatorClass(options);
 }

@@ -10,14 +10,14 @@ export async function connectWebSocket({
   logger,
   serverEndpoint,
   forwardEndpoint,
-  token,
+  bearerToken,
   path,
   filterBodyRegex,
 }: {
   logger: Logger;
   serverEndpoint: string;
   forwardEndpoint: string;
-  token?: string;
+  bearerToken?: string;
   path?: string;
   filterBodyRegex?: string;
 }): Promise<void> {
@@ -25,11 +25,13 @@ export async function connectWebSocket({
     const clientId = crypto.randomUUID();
     const wsParams = new URLSearchParams({
       clientId,
-      ...(token ? { token } : {}),
       ...(path ? { path } : {}),
       ...(filterBodyRegex ? { filterBodyRegex } : {}),
     });
-    const ws = new WebSocket(`${serverEndpoint}?${wsParams.toString()}`);
+    const opts: ClientOptions = {
+      ...(bearerToken ? { headers: { Authorization: `Bearer ${bearerToken}` } } : {}),
+    };
+    const ws = new WebSocket(`${serverEndpoint}?${wsParams.toString()}`, opts);
     activeWs = ws;
 
     ws.on('open', () => {
