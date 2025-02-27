@@ -256,6 +256,9 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
       logger.error('Invalid content type');
       return res.status(400).send('Invalid content type');
     }
+    if (authenticator && !authenticator.authenticate(req)) {
+      return res.status(401).send('Authentication failed');
+    }
 
     let payload: OneshotCallbackRegisterRequestPayload | undefined = undefined;
     try {
