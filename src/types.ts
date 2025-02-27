@@ -9,6 +9,7 @@ export type WebSocketHTTPEvent = {
   rawBody: string;
   method: string;
   path: string;
+  queryParams?: Record<string, string>;
 }
 
 export function isWebSocketHTTPEvent(event: WebSocketEvent): event is WebSocketHTTPEvent {

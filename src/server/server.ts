@@ -32,12 +32,29 @@ interface PendingResponses {
   [eventId: string]: PendingResponse;
 }
 
+interface OneshotCallbackRegisterRequestPayload {
+  clientId: string;
+  path: string;
+}
+
+interface OneshotCallback {
+  clientId: string;
+  path: string;
+  expiresAt: number;
+}
+
+interface OneshotCallbacks {
+  [path: string]: OneshotCallback;
+}
+
 function filterEvent(event: WebSocketHTTPEvent, ws: ExtendedWebSocket): boolean {
   if (ws.filterBodyRegex) {
     return ws.filterBodyRegex.test(event.rawBody);
   }
   return true;
 }
+
+const REQUEST_TIMEOUT_MS = 10000;
 
 export function createServer(logger: Logger, authenticator: IAuthenticator | null): {
   server: http.Server;
@@ -53,10 +70,11 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
 
   const wss = new WebSocket.Server({ server });
 
-
   let clients: Clients = {};
   let pendingResponses: PendingResponses = {};
+  let oneshotCallbacks: OneshotCallbacks = {};
   const pendingResponsesLock = new Mutex();
+  const oneshotCallbacksLock = new Mutex();
 
   wss.on('connection', (ws: ExtendedWebSocket, req: http.IncomingMessage) => {
     if (!req.url) {
@@ -127,7 +145,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
               pr.resolve([ws.clientId, resp]);
               setTimeout(() => {
                 delete pendingResponses[resp.eventId];
-              }, 10000);
+              }, REQUEST_TIMEOUT_MS);
             } else {
               const responseData: WebSocketErrorResponse = {
                 kind: 'error',
@@ -197,7 +215,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
               delete pendingResponses[event.eventId];
               rejectFn("Client response timeout");
             }
-          }, 10000)
+          }, REQUEST_TIMEOUT_MS)
         };
       });
 
@@ -232,7 +250,172 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
     });
   });
 
+  const CALLBACK_REGISTRATION_EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
+  app.post('/callback/oneshot/register', express.json(), async (req: Request, res: Response) => {
+    if (req.headers['content-type'] !== 'application/json') {
+      logger.error('Invalid content type');
+      return res.status(400).send('Invalid content type');
+    }
+
+    let payload: OneshotCallbackRegisterRequestPayload | undefined = undefined;
+    try {
+      payload = req.body as OneshotCallbackRegisterRequestPayload;
+      if (!payload) {
+        throw new Error('Invalid payload');
+      }
+    } catch (err) {
+      logger.error(err, 'Invalid payload');
+      return res.status(400).send('Invalid payload');
+    }
+
+    const clientId = payload.clientId;
+    if (!clientId) {
+      logger.error('No client ID provided');
+      return res.status(400).send('No client ID provided');
+    }
+    const path = payload.path;
+    if (!path) {
+      logger.error('No path provided');
+      return res.status(400).send('No path provided');
+    }
+
+    let clientExists = false;
+    for (const pathClients of Object.values(clients)) {
+      if (pathClients.some(client => client.clientId === clientId)) {
+        clientExists = true;
+        break;
+      }
+    }
+
+    if (!clientExists) {
+      logger.error(`Client ${clientId} not connected`);
+      return res.status(404).send('Client not connected');
+    }
+
+    const expiresAt = Date.now() + CALLBACK_REGISTRATION_EXPIRATION_MS;
+    
+    await oneshotCallbacksLock.runExclusive(() => {
+      oneshotCallbacks[path] = {
+        clientId,
+        path,
+        expiresAt
+      };
+    });
+
+    logger.info(`Registered oneshot callback for client:${clientId} at path:${path}`);
+    
+    const callbackPath = `/callback/oneshot${path}`;
+    const callbackFullUrl = `${req.protocol}://${req.get('host')}${callbackPath}`;
+    return res.status(200).json({ callbackUrl: callbackFullUrl });
+  });
+
+  app.get('/callback/oneshot/*', async (req: Request, res: Response) => {
+    logger.info(`Received oneshot callback request: ${req.path}`);
+    const requestPath = req.path.replace(/^\/callback\/oneshot/, '');
+    let callback: OneshotCallback | undefined;
+    
+    await oneshotCallbacksLock.runExclusive(() => {
+      callback = oneshotCallbacks[requestPath];
+      if (callback) {
+        delete oneshotCallbacks[requestPath];
+      }
+    });
+
+    if (!callback) {
+      logger.warn(`No oneshot callback found for path: ${requestPath}`);
+      return res.status(404).send('Callback not found or already used');
+    }
+
+    if (callback.expiresAt < Date.now()) {
+      logger.warn(`Oneshot callback expired for path: ${requestPath}`);
+      return res.status(410).send('Callback expired');
+    }
+
+    let targetClient: ExtendedWebSocket | undefined;
+    for (const pathClients of Object.values(clients)) {
+      targetClient = pathClients.find(client => client.clientId === callback!.clientId);
+      if (targetClient) break;
+    }
+
+    if (!targetClient || targetClient.readyState !== WebSocket.OPEN) {
+      logger.warn(`Client ${callback.clientId} not connected for oneshot callback`);
+      return res.status(503).send('Target client not available');
+    }
+
+    const eventId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
+    
+    const event: WebSocketHTTPEvent = {
+      kind: 'http',
+      eventId,
+      headers: req.headers,
+      rawBody: '',
+      method: req.method,
+      path: requestPath,
+      queryParams: Object.fromEntries(queryParams.entries())
+    };
+
+    let resolveFn: (value: Pair<string, WebSocketResponse>) => void;
+    let rejectFn: (reason?: any) => void;
+    const responsePromise = new Promise<Pair<string, WebSocketResponse>>((resolve, reject) => {
+      resolveFn = resolve;
+      rejectFn = reject;
+    });
+
+    await pendingResponsesLock.runExclusive(() => {
+      pendingResponses[event.eventId] = {
+        resolved: false,
+        resolve: resolveFn!,
+        reject: rejectFn!,
+        clients: [targetClient!],
+        timeout: setTimeout(() => {
+          if (!pendingResponses[event.eventId].resolved) {
+            delete pendingResponses[event.eventId];
+            rejectFn("Client response timeout");
+          }
+        }, 10000)
+      };
+    });
+
+    targetClient.send(JSON.stringify(event));
+    logger.debug(`Sent oneshot callback event:${event.eventId} to client:${targetClient.clientId}`);
+
+    try {
+      const [clientId, responseData] = await responsePromise;
+      if (isWebSocketHTTPResponse(responseData)) {
+        for (const [key, value] of Object.entries(responseData.headers)) {
+          if (value) {
+            res.setHeader(key, value);
+          }
+        }
+        logger.info(`Responded ${responseData.status} for oneshot callback (event:${event.eventId} by client:${clientId})`);
+        return res.status(responseData.status).send(responseData.body);
+      }
+      if (isWebSocketErrorResponse(responseData)) {
+        logger.error(`Responded 500 ${responseData.error} for oneshot callback (event:${event.eventId} by client:${clientId})`);
+        return res.status(500).send(responseData.error);
+      }
+    } catch (err) {
+      logger.error(`Error handling oneshot callback: ${err} for event:${event.eventId}`);
+      return res.status(500).send('Error processing callback');
+    }
+  });
+
+  const cleanupInterval = setInterval(async () => {
+    const now = Date.now();
+    await oneshotCallbacksLock.runExclusive(() => {
+      for (const [path, callback] of Object.entries(oneshotCallbacks)) {
+        if (callback.expiresAt < now) {
+          delete oneshotCallbacks[path];
+          logger.debug(`Cleaned up expired oneshot callback for path: ${path}`);
+        }
+      }
+    });
+  }, CALLBACK_REGISTRATION_EXPIRATION_MS);
+
   function shutdown(): void {
+    clearInterval(cleanupInterval);
+    
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.close(1000, 'Server is shutting down');

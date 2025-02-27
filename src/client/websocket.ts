@@ -46,14 +46,25 @@ export async function connectWebSocket({
         logger.error(`Error: ${event.error} for ${event.eventId}`);
       } else if (isWebSocketHTTPEvent(event)) {
         try {
+          const url = new URL(event.path, forwardEndpoint);
+          if (event.queryParams) {
+            for (const [key, value] of Object.entries(event.queryParams)) {
+              url.searchParams.set(key, value);
+            }
+          }
           const req = {
             method: event.method,
-            url: `${forwardEndpoint}${event.path}`,
+            url: url.toString(),
             headers: event.headers,
             data: event.rawBody,
           };
+          logger.debug(`request: ${JSON.stringify(req)}`);
 
-          const response = await axios(req);
+          const response = await axios({
+            ...req,
+            validateStatus: (_status) => true, // do not throw for any status code
+            maxRedirects: 0, // TODO: parameterize
+          });
           logger.debug(`response status: ${response.status}`);
           logger.debug(`response headers: ${response.headers}`);
           logger.debug(`response data: ${JSON.stringify(response.data)}`);
