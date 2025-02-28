@@ -1,6 +1,26 @@
 {
   "checksums": [
     {
+      "id": "github_release/github.com/Songmu/tagpr/v1.5.1/tagpr_v1.5.1_darwin_amd64.zip",
+      "checksum": "5573BA244EF5B651844D1798FC45F7326A6CE17DF8EF0D8BD8ADFCC8090702C2",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/Songmu/tagpr/v1.5.1/tagpr_v1.5.1_darwin_arm64.zip",
+      "checksum": "C73EB92724BAC1C1F990205D24A41F8453514C3A8542893E21449675419D0CD3",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/Songmu/tagpr/v1.5.1/tagpr_v1.5.1_linux_amd64.tar.gz",
+      "checksum": "C8914583F55BA0AD03293E05CB0B38E94662CCE09E5157DDAEF75E7A2709E046",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/Songmu/tagpr/v1.5.1/tagpr_v1.5.1_linux_arm64.tar.gz",
+      "checksum": "5FD34E65D3EC363593B8E647AF4DCB06239C3A2FF1DD78D46E83821CA48AD2C6",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/pnpm/pnpm/v10.1.0/pnpm-linux-arm64",
       "checksum": "8C027949B8E8D2E25F1A42572E814C16C37EDC550A071D0B25F9BD1B9F2AE320",
       "algorithm": "sha256"
