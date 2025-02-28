@@ -38,6 +38,7 @@ Options:
   --log-level <string>              Log level (default: "info")
   --filter-body-regex <string>      Filter body regex
   --reconnect-interval-ms <number>  Reconnect interval in milliseconds (default: "1000")
+  --port <number>                   Port to listen on (default: 3001, env: PORT)
   -h, --help                        display help for command
 ```
 
