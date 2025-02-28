@@ -250,7 +250,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
     });
   });
 
-  const CALLBACK_REGISTRATION_EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
+  const CALLBACK_REGISTRATION_EXPIRATION_MS = 30 * 1000; // 30 seconds
   app.post('/callback/oneshot/register', express.json(), async (req: Request, res: Response) => {
     if (req.headers['content-type'] !== 'application/json') {
       logger.error('Invalid content type');
@@ -297,13 +297,27 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
 
     const expiresAt = Date.now() + CALLBACK_REGISTRATION_EXPIRATION_MS;
     
+    let registrationSuccessful = false;
     await oneshotCallbacksLock.runExclusive(() => {
+      if (oneshotCallbacks[path] && oneshotCallbacks[path].clientId !== clientId) {
+        return false;
+      }
+      
       oneshotCallbacks[path] = {
         clientId,
         path,
         expiresAt
       };
+      registrationSuccessful = true;
     });
+    
+    if (!registrationSuccessful) {
+      logger.warn(`Failed to register oneshot callback for client:${clientId} at path:${path} because it is already registered by another client`);
+      return res.status(409).json({ 
+        error: 'Path already registered',
+        message: 'This callback path is already registered by another client'
+      });
+    }
 
     logger.info(`Registered oneshot callback for client:${clientId} at path:${path}`);
     
@@ -410,7 +424,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
       for (const [path, callback] of Object.entries(oneshotCallbacks)) {
         if (callback.expiresAt < now) {
           delete oneshotCallbacks[path];
-          logger.debug(`Cleaned up expired oneshot callback for path: ${path}`);
+          logger.info(`Cleaned up expired oneshot callback for path: ${path}`);
         }
       }
     });
