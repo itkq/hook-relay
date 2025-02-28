@@ -4,8 +4,8 @@
   "description": "Relay for webhook events",
   "main": "dist/server/index.js",
   "bin": {
-    "hook-relay-server": "./dist/server/index.js",
-    "hook-relay-client": "./dist/client/index.js"
+    "hook-relay-server": "dist/server/index.js",
+    "hook-relay-client": "dist/client/index.js"
   },
   "scripts": {
     "dev:server": "nodemon --exec ts-node src/server/index.ts -- --port 3000 --bearer-token token",
@@ -23,7 +23,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/itkq/hook-relay.git"
+    "url": "git+https://github.com/itkq/hook-relay.git"
   },
   "engines": {
     "node": ">=18.0.0"
