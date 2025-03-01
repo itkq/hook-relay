@@ -2,6 +2,7 @@ import { getAuthenticator } from './authenticator';
 import { createServer } from './server';
 import { Command, Option } from 'commander';
 import { createLogger, LogLevel } from '../logger';
+import { VERSION } from '../version';
 
 interface CLIOptions {
   port?: number;
@@ -11,6 +12,7 @@ interface CLIOptions {
 
 const program = new Command();
 program
+  .version(VERSION)
   .addOption(new Option('--port <number>', 'Port to listen on').default(3000).env('PORT'))
   .addOption(new Option('--bearer-token <string>', 'Bearer token').env('BEARER_TOKEN'))
   .option('--log-level <string>', 'Log level', 'info')

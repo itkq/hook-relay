@@ -1,4 +1,4 @@
 [tagpr]
 	releaseBranch = main
-	versionFile = package.json
+	versionFile = package.json,src/version.ts
 	vPrefix = false
