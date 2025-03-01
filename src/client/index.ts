@@ -5,6 +5,7 @@ import { connectWebSocket, shutdown } from './websocket';
 import { createLogger, LogLevel } from '../logger';
 import express, { Request, Response } from 'express';
 import http from 'http';
+import { VERSION } from '../version';
 
 interface CLIOptions {
   logLevel: LogLevel;
@@ -20,6 +21,7 @@ interface CLIOptions {
 const program = new Command();
 
 program
+  .version(VERSION)
   .requiredOption('--server-endpoint <string>', 'Server endpoint URL')
   .requiredOption('--forward-endpoint <string>', 'Forward endpoint URL')
   .addOption(new Option('--bearer-token <string>', 'Bearer token').env('BEARER_TOKEN'))
