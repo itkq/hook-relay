@@ -12,6 +12,7 @@ interface ExtendedWebSocket extends WebSocket {
   path?: string;
   filterBodyRegex?: RegExp;
   clientId: string;
+  isAlive: boolean;
 }
 
 interface Clients {
@@ -54,7 +55,8 @@ function filterEvent(event: WebSocketHTTPEvent, ws: ExtendedWebSocket): boolean 
   return true;
 }
 
-const REQUEST_TIMEOUT_MS = 10000;
+const REQUEST_TIMEOUT_MS = 10_000;
+const HEARTBEAT_INTERVAL_MS = 20_000;
 
 export function createServer(logger: Logger, authenticator: IAuthenticator | null): {
   server: http.Server;
@@ -76,7 +78,29 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
   const pendingResponsesLock = new Mutex();
   const oneshotCallbacksLock = new Mutex();
 
+  
+  const heartbeatInterval = setInterval(() => {
+    for (const ws of wss.clients) {
+      const extWs = ws as ExtendedWebSocket;
+      if (extWs.isAlive === false) {
+        logger.warn(`client:${extWs.clientId} failed heartbeat check, terminating connection`);
+        return extWs.terminate();
+      }
+      
+      extWs.isAlive = false;
+      ws.ping();
+      logger.debug(`Sent ping to client:${extWs.clientId}`);
+    }
+  }, HEARTBEAT_INTERVAL_MS);
+
   wss.on('connection', (ws: ExtendedWebSocket, req: http.IncomingMessage) => {
+    ws.isAlive = true;
+    
+    ws.on('pong', () => {
+      ws.isAlive = true;
+      logger.debug(`Received pong from client:${ws.clientId}`);
+    });
+
     if (!req.url) {
       ws.close(4003, 'Invalid request URL');
       return;
@@ -432,12 +456,13 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
 
   function shutdown(): void {
     clearInterval(cleanupInterval);
+    clearInterval(heartbeatInterval);
     
-    wss.clients.forEach((client) => {
+    for (const client of wss.clients) {
       if (client.readyState === WebSocket.OPEN) {
         client.close(1000, 'Server is shutting down');
       }
-    });
+    }
     
     wss.close(() => {
       logger.info("WebSocket server closed.");

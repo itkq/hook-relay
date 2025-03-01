@@ -5,6 +5,8 @@ import { IncomingHttpHeaders } from 'http';
 import { Logger } from 'pino';
 
 let activeWs: WebSocket | null = null;
+let heartbeatInterval: NodeJS.Timeout | null = null;
+const HEARTBEAT_INTERVAL_MS = 20_000;
 
 export async function connectWebSocket({
   clientId,
@@ -35,8 +37,23 @@ export async function connectWebSocket({
     const ws = new WebSocket(`${serverEndpoint}?${wsParams.toString()}`, opts);
     activeWs = ws;
 
+    ws.on('ping', () => {
+      logger.debug('Received ping from server, responding with pong');
+    });
+
     ws.on('open', () => {
       logger.info(`Connected to server ${serverEndpoint} as ${clientId}${path ? ` (${path})` : ''}`);
+      
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+      }
+      
+      heartbeatInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          logger.debug('Sending heartbeat to server');
+          ws.ping();
+        }
+      }, HEARTBEAT_INTERVAL_MS);
     });
 
     ws.on('message', async (data) => {
@@ -85,6 +102,11 @@ export async function connectWebSocket({
     });
 
     ws.on('close', (code: number) => {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+      }
+      
       // established connection
       if (code === 1000) {
         return resolve(clientId);
@@ -106,6 +128,11 @@ export async function connectWebSocket({
     });
 
     ws.on('error', (err: unknown) => {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+      }
+      
       ws.close();
       if (err && typeof err === 'object') {
         const error = err as any;
@@ -124,6 +151,11 @@ export async function connectWebSocket({
 }
 
 export function shutdown(logger: Logger): void {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+  
   if (activeWs && activeWs.readyState === WebSocket.OPEN) {
     logger.info("Closing WebSocket connection gracefully...");
     activeWs.close(1000, "Client shutdown");
