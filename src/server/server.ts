@@ -171,7 +171,6 @@ export function createServer(logger: Logger, challengePassphrase: string): {
           .update(ws.challenge)
           .digest('hex');
         if (timingSafeEqual(Buffer.from(resp.hmac, 'hex'), Buffer.from(hmac, 'hex'))) {
-          ws.send(JSON.stringify({ type: 'authResult', success: true }));
           logger.info(`client:${ws.clientId} authenticated`);
           ws.isAuthenticated = true;
 
