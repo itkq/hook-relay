@@ -1,8 +1,9 @@
-import WebSocket, { ClientOptions } from 'ws';
+import WebSocket from 'ws';
 import axios from 'axios';
-import { isWebSocketErrorEvent, isWebSocketHTTPEvent, WebSocketEvent, WebSocketHTTPResponse } from '../types';
+import { isWebSocketChallengeMessage, isWebSocketChallengeResultMessage, isWebSocketErrorMessage, isWebSocketHTTPMessage, WebSocketChallengeResponse, WebSocketHTTPMessage, WebSocketHTTPResponse, WebSocketMessage } from '../types';
 import { IncomingHttpHeaders } from 'http';
 import { Logger } from 'pino';
+import { createHmac } from 'crypto';
 
 let activeWs: WebSocket | null = null;
 let heartbeatInterval: NodeJS.Timeout | null = null;
@@ -13,7 +14,7 @@ export async function connectWebSocket({
   logger,
   serverEndpoint,
   forwardEndpoint,
-  bearerToken,
+  challengePassphrase,
   path,
   filterBodyRegex,
 }: {
@@ -21,7 +22,7 @@ export async function connectWebSocket({
   logger: Logger;
   serverEndpoint: string;
   forwardEndpoint: string;
-  bearerToken?: string;
+  challengePassphrase: string;
   path?: string;
   filterBodyRegex?: string;
 }): Promise<string> {
@@ -31,10 +32,7 @@ export async function connectWebSocket({
       ...(path ? { path } : {}),
       ...(filterBodyRegex ? { filterBodyRegex } : {}),
     });
-    const opts: ClientOptions = {
-      ...(bearerToken ? { headers: { Authorization: `Bearer ${bearerToken}` } } : {}),
-    };
-    const ws = new WebSocket(`${serverEndpoint}?${wsParams.toString()}`, opts);
+    const ws = new WebSocket(`${serverEndpoint}?${wsParams.toString()}`);
     activeWs = ws;
 
     ws.on('ping', () => {
@@ -57,23 +55,38 @@ export async function connectWebSocket({
     });
 
     ws.on('message', async (data) => {
-      const event = JSON.parse(data.toString()) as WebSocketEvent;
-      logger.debug(`Received event: ${JSON.stringify(event)}`);
-      if (isWebSocketErrorEvent(event)) {
-        logger.error(`Error: ${event.error} for ${event.eventId}`);
-      } else if (isWebSocketHTTPEvent(event)) {
+      const message = JSON.parse(data.toString()) as WebSocketMessage;
+      logger.debug(`Received message: ${JSON.stringify(message)}`);
+      if (isWebSocketChallengeMessage(message)) {
+        const hmac = createHmac('sha256', challengePassphrase)
+          .update(message.nonce)
+          .digest('hex');
+        const challengeResponse: WebSocketChallengeResponse = {
+          kind: 'challenge-response',
+          clientId,
+          hmac,
+        };
+        ws.send(JSON.stringify(challengeResponse));
+        logger.debug(`Sent challenge response: ${JSON.stringify(challengeResponse)}`);
+      } else if (isWebSocketChallengeResultMessage(message)) {
+        if (message.success) {
+          logger.info(`Authentication successful`);
+        } else {
+          logger.error(`Authentication failed (challenge response mismatch)`);
+        }
+      } else if (isWebSocketHTTPMessage(message)) {
         try {
-          const url = new URL(event.path, forwardEndpoint);
-          if (event.queryParams) {
-            for (const [key, value] of Object.entries(event.queryParams)) {
+          const url = new URL(message.path, forwardEndpoint);
+          if (message.queryParams) {
+            for (const [key, value] of Object.entries(message.queryParams)) {
               url.searchParams.set(key, value);
             }
           }
           const req = {
-            method: event.method,
+            method: message.method,
             url: url.toString(),
-            headers: event.headers,
-            data: event.rawBody,
+            headers: message.headers,
+            data: message.rawBody,
           };
           logger.debug(`request: ${JSON.stringify(req)}`);
 
@@ -88,16 +101,18 @@ export async function connectWebSocket({
           const responseData: WebSocketHTTPResponse = {
             kind: 'http',
             clientId,
-            eventId: event.eventId,
+            messageId: message.messageId,
             headers: response.headers as IncomingHttpHeaders,
             status: response.status,
             body: response.data,
           };
           ws.send(JSON.stringify(responseData));
-          logger.info(`${event.method} ${event.path} -> ${responseData.status} sent to server (event:${responseData.eventId})`);
+          logger.info(`${message.method} ${message.path} -> ${responseData.status} sent to server (message:${responseData.messageId})`);
         } catch (error: unknown) {
           logger.error(error, "Error forwarding request");
         }
+      } else if (isWebSocketErrorMessage(message)) {
+        logger.error(`Error: ${message.error} for ${message.messageId}`);
       }
     });
 

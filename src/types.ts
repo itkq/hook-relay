@@ -1,10 +1,29 @@
 import express from 'express';
 
-export type WebSocketEvent = WebSocketHTTPEvent | WebSocketErrorEvent;
+export type WebSocketMessage = WebSocketChallengeMessage | WebSocketChallengeResultMessage | WebSocketHTTPMessage | WebSocketErrorMessage;
 
-export type WebSocketHTTPEvent = {
+export type WebSocketChallengeMessage = {
+  kind: 'challenge';
+  nonce: string;
+}
+
+export function isWebSocketChallengeMessage(message: WebSocketMessage): message is WebSocketChallengeMessage {
+  return message.kind === 'challenge';
+}
+
+export type WebSocketChallengeResultMessage = {
+  kind: 'challenge-result';
+  clientId: string;
+  success: boolean;
+}
+
+export function isWebSocketChallengeResultMessage(message: WebSocketMessage): message is WebSocketChallengeResultMessage {
+  return message.kind === 'challenge-result';
+}
+
+export type WebSocketHTTPMessage = {
   kind: 'http';
-  eventId: string;
+  messageId: string;
   headers: express.Request['headers'];
   rawBody: string;
   method: string;
@@ -12,27 +31,37 @@ export type WebSocketHTTPEvent = {
   queryParams?: Record<string, string>;
 }
 
-export function isWebSocketHTTPEvent(event: WebSocketEvent): event is WebSocketHTTPEvent {
-  return event.kind === 'http';
+export function isWebSocketHTTPMessage(message: WebSocketMessage): message is WebSocketHTTPMessage {
+  return message.kind === 'http';
 }
 
-export type WebSocketErrorEvent = {
+export type WebSocketErrorMessage = {
   kind: 'error';
-  eventId: string;
+  messageId: string;
   error: string;
   status: number;
 }
 
-export function isWebSocketErrorEvent(event: WebSocketEvent): event is WebSocketErrorEvent {
-  return event.kind === 'error';
+export function isWebSocketErrorMessage(message: WebSocketMessage): message is WebSocketErrorMessage {
+  return message.kind === 'error';
 }
 
-export type WebSocketResponse = WebSocketHTTPResponse | WebSocketErrorResponse;
+export type WebSocketResponse = WebSocketChallengeResponse | WebSocketHTTPResponse | WebSocketErrorResponse;
 
-export type WebSocketHTTPResponse= {
+export type WebSocketChallengeResponse = {
+  kind: 'challenge-response';
+  clientId: string;
+  hmac: string;
+}
+
+export function isWebSocketChallengeResponse(response: WebSocketResponse): response is WebSocketChallengeResponse {
+  return response.kind === 'challenge-response';
+}
+
+export type WebSocketHTTPResponse = {
   kind: 'http';
   clientId: string;
-  eventId: string;
+  messageId: string;
   headers: express.Request['headers'];
   status: number;
   body: string;
@@ -45,7 +74,7 @@ export function isWebSocketHTTPResponse(response: WebSocketResponse): response i
 export type WebSocketErrorResponse = {
   kind: 'error';
   clientId: string;
-  eventId: string;
+  messageId: string;
   error: string;
 }
 

@@ -3,16 +3,18 @@
 import express, { Request, Response } from 'express';
 import http from 'http';
 import WebSocket from 'ws';
-import { WebSocketHTTPEvent, isWebSocketHTTPResponse, isWebSocketErrorResponse, WebSocketResponse, WebSocketErrorResponse } from '../types';
+import { isWebSocketHTTPResponse, isWebSocketErrorResponse, WebSocketResponse, WebSocketErrorResponse, WebSocketChallengeMessage, WebSocketHTTPMessage, isWebSocketChallengeResponse, WebSocketChallengeResultMessage } from '../types';
 import { Mutex } from 'async-mutex';
-import { IAuthenticator } from './authenticator';
 import { Logger } from 'pino';
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 
 interface ExtendedWebSocket extends WebSocket {
   path?: string;
   filterBodyRegex?: RegExp;
   clientId: string;
   isAlive: boolean;
+  challenge: string;
+  isAuthenticated: boolean;
 }
 
 interface Clients {
@@ -48,9 +50,9 @@ interface OneshotCallbacks {
   [path: string]: OneshotCallback;
 }
 
-function filterEvent(event: WebSocketHTTPEvent, ws: ExtendedWebSocket): boolean {
+function filterMessage(message: WebSocketHTTPMessage, ws: ExtendedWebSocket): boolean {
   if (ws.filterBodyRegex) {
-    return ws.filterBodyRegex.test(event.rawBody);
+    return ws.filterBodyRegex.test(message.rawBody);
   }
   return true;
 }
@@ -58,7 +60,7 @@ function filterEvent(event: WebSocketHTTPEvent, ws: ExtendedWebSocket): boolean 
 const REQUEST_TIMEOUT_MS = 10_000;
 const HEARTBEAT_INTERVAL_MS = 20_000;
 
-export function createServer(logger: Logger, authenticator: IAuthenticator | null): {
+export function createServer(logger: Logger, challengePassphrase: string): {
   server: http.Server;
   shutdown: () => void;
 } {
@@ -95,7 +97,16 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
 
   wss.on('connection', (ws: ExtendedWebSocket, req: http.IncomingMessage) => {
     ws.isAlive = true;
-    
+
+    const nonce = randomBytes(16).toString('hex');
+    ws.challenge = nonce;
+    const challengeMessage: WebSocketChallengeMessage = {
+      kind: 'challenge',
+      nonce,
+    };
+    logger.debug(`Sent challenge message to new client`);
+    ws.send(JSON.stringify(challengeMessage));
+
     ws.on('pong', () => {
       ws.isAlive = true;
       logger.debug(`Received pong from client:${ws.clientId}`);
@@ -109,10 +120,6 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
     const clientId = query.get('clientId');
     if (!clientId) {
       ws.close(4004, 'No clientId provided');
-      return;
-    }
-    if (authenticator && !authenticator.authenticate(req as unknown as Request)) { // FIXME
-      ws.close(4001, 'Authentication failed');
       return;
     }
     const filterBodyRegexStr = query.get('filterBodyRegex');
@@ -159,22 +166,47 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
         logger.error("Invalid message:", message);
         return;
       }
-      if (resp.eventId) {
+      if (isWebSocketChallengeResponse(resp)) {
+        const hmac = createHmac('sha256', challengePassphrase)
+          .update(ws.challenge)
+          .digest('hex');
+        if (timingSafeEqual(Buffer.from(resp.hmac, 'hex'), Buffer.from(hmac, 'hex'))) {
+          ws.send(JSON.stringify({ type: 'authResult', success: true }));
+          logger.info(`client:${ws.clientId} authenticated`);
+          ws.isAuthenticated = true;
+
+          const challengeResultMessage: WebSocketChallengeResultMessage = {
+            kind: 'challenge-result',
+            clientId: ws.clientId,
+            success: true,
+          };
+          ws.send(JSON.stringify(challengeResultMessage));
+        } else {
+          logger.warn(`client:${ws.clientId} authentication failed`);
+          const challengeResultMessage: WebSocketChallengeResultMessage = {
+            kind: 'challenge-result',
+            clientId: ws.clientId,
+            success: false,
+          };
+          ws.send(JSON.stringify(challengeResultMessage));
+          ws.close(4001, 'Authentication failed');
+        }
+      } else if (resp.messageId && ws.isAuthenticated) {
         await pendingResponsesLock.runExclusive(async () => {
-          let pr = pendingResponses[resp.eventId];
+          let pr = pendingResponses[resp.messageId];
           if (pr) {
             if (!pr.resolved) {
               pr.resolved = true;
               clearTimeout(pr.timeout);
               pr.resolve([ws.clientId, resp]);
               setTimeout(() => {
-                delete pendingResponses[resp.eventId];
+                delete pendingResponses[resp.messageId];
               }, REQUEST_TIMEOUT_MS);
             } else {
               const responseData: WebSocketErrorResponse = {
                 kind: 'error',
                 clientId: ws.clientId,
-                eventId: resp.eventId,
+                messageId: resp.messageId,
                 error: "Response already provided (maybe conflict with other clients)",
               }
               ws.send(JSON.stringify(responseData));
@@ -183,12 +215,15 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
             const responseData: WebSocketErrorResponse = {
               kind: 'error',
               clientId: ws.clientId,
-              eventId: resp.eventId,
+              messageId: resp.messageId,
               error: "No pending request",
             }
             ws.send(JSON.stringify(responseData));
           }
         });
+      } else {
+        logger.warn(`Message from client:${ws.clientId} without authentication, ignored`);
+        ws.close(4002, 'Authentication required');
       }
     });
   });
@@ -204,18 +239,18 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
     });
     req.on('end', async () => {
       const requestPath = req.path.replace(/^\/hook/, '');
-      const eventId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
-      logger.info(`Received ${req.method} ${req.path} as event:${eventId}`);
-      const event: WebSocketHTTPEvent = {
+      const messageId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+      logger.info(`Received ${req.method} ${req.path} as message:${messageId}`);
+      const message: WebSocketHTTPMessage = {
         kind: 'http',
-        eventId,
+        messageId,
         headers: req.headers,
         rawBody: rawBody,
         method: req.method,
         path: requestPath,
       };
       const clientList = (clients[requestPath] || []).concat(clients['*'] || []);
-      let matchedClients = clientList.filter(ws => ws.readyState === WebSocket.OPEN && filterEvent(event, ws));
+      let matchedClients = clientList.filter(ws => ws.readyState === WebSocket.OPEN && filterMessage(message, ws));
       if (matchedClients.length === 0) {
         logger.warn("No matching client found for path: " + requestPath);
         return res.status(404).send("No matching client found for path: " + requestPath);
@@ -229,14 +264,14 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
       });
 
       await pendingResponsesLock.runExclusive(() => {
-        pendingResponses[event.eventId] = {
+        pendingResponses[message.messageId] = {
           resolved: false,
           resolve: resolveFn!,
           reject: rejectFn!,
           clients: matchedClients.slice(),
           timeout: setTimeout(() => {
-            if (!pendingResponses[event.eventId].resolved) {
-              delete pendingResponses[event.eventId];
+            if (!pendingResponses[message.messageId].resolved) {
+              delete pendingResponses[message.messageId];
               rejectFn("Client response timeout");
             }
           }, REQUEST_TIMEOUT_MS)
@@ -244,8 +279,8 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
       });
 
       for (const ws of matchedClients) {
-        ws.send(JSON.stringify(event));
-        logger.debug(`Sent event:${event.eventId} to client:${ws.clientId}`);
+        ws.send(JSON.stringify(message));
+        logger.debug(`Sent message:${message.messageId} to client:${ws.clientId}`);
       }
 
       try {
@@ -256,15 +291,15 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
               res.setHeader(key, value);
             }
           }
-          logger.info(`Responded ${responseData.status} (event:${event.eventId} by client:${clientId})`);
+          logger.info(`Responded ${responseData.status} (message:${message.messageId} by client:${clientId})`);
           return res.status(responseData.status).send(responseData.body);
         }
         if (isWebSocketErrorResponse(responseData)) {
-          logger.error(`Responded 500 ${responseData.error} (event:${event.eventId} by client:${clientId})`);
+          logger.error(`Responded 500 ${responseData.error} (message:${message.messageId} by client:${clientId})`);
           return res.status(500).send(responseData.error);
         }
       } catch (err) {
-        logger.error(`someone responded with error ${err} for event:${event.eventId}`);
+        logger.error(`someone responded with error ${err} for message:${message.messageId}`);
         return res.status(500).send(err);
       }
     });
@@ -279,9 +314,6 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
     if (req.headers['content-type'] !== 'application/json') {
       logger.error('Invalid content type');
       return res.status(400).send('Invalid content type');
-    }
-    if (authenticator && !authenticator.authenticate(req)) {
-      return res.status(401).send('Authentication failed');
     }
 
     let payload: OneshotCallbackRegisterRequestPayload | undefined = undefined;
@@ -316,7 +348,7 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
 
     if (!clientExists) {
       logger.error(`Client ${clientId} not connected`);
-      return res.status(404).send('Client not connected');
+      return res.status(404).send('Client not found');
     }
 
     const expiresAt = Date.now() + CALLBACK_REGISTRATION_EXPIRATION_MS;
@@ -383,12 +415,12 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
       return res.status(503).send('Target client not available');
     }
 
-    const eventId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    const messageId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
     const queryParams = new URLSearchParams(req.url.split('?')[1] || '');
     
-    const event: WebSocketHTTPEvent = {
+    const message: WebSocketHTTPMessage = {
       kind: 'http',
-      eventId,
+      messageId,
       headers: req.headers,
       rawBody: '',
       method: req.method,
@@ -404,22 +436,22 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
     });
 
     await pendingResponsesLock.runExclusive(() => {
-      pendingResponses[event.eventId] = {
+      pendingResponses[message.messageId] = {
         resolved: false,
         resolve: resolveFn!,
         reject: rejectFn!,
         clients: [targetClient!],
         timeout: setTimeout(() => {
-          if (!pendingResponses[event.eventId].resolved) {
-            delete pendingResponses[event.eventId];
+          if (!pendingResponses[message.messageId].resolved) {
+            delete pendingResponses[message.messageId];
             rejectFn("Client response timeout");
           }
         }, 10000)
       };
     });
 
-    targetClient.send(JSON.stringify(event));
-    logger.debug(`Sent oneshot callback event:${event.eventId} to client:${targetClient.clientId}`);
+    targetClient.send(JSON.stringify(message));
+    logger.debug(`Sent oneshot callback message:${message.messageId} to client:${targetClient.clientId}`);
 
     try {
       const [clientId, responseData] = await responsePromise;
@@ -429,15 +461,15 @@ export function createServer(logger: Logger, authenticator: IAuthenticator | nul
             res.setHeader(key, value);
           }
         }
-        logger.info(`Responded ${responseData.status} for oneshot callback (event:${event.eventId} by client:${clientId})`);
+        logger.info(`Responded ${responseData.status} for oneshot callback (message:${message.messageId} by client:${clientId})`);
         return res.status(responseData.status).send(responseData.body);
       }
       if (isWebSocketErrorResponse(responseData)) {
-        logger.error(`Responded 500 ${responseData.error} for oneshot callback (event:${event.eventId} by client:${clientId})`);
+        logger.error(`Responded 500 ${responseData.error} for oneshot callback (message:${message.messageId} by client:${clientId})`);
         return res.status(500).send(responseData.error);
       }
     } catch (err) {
-      logger.error(`Error handling oneshot callback: ${err} for event:${event.eventId}`);
+      logger.error(`Error handling oneshot callback: ${err} for message:${message.messageId}`);
       return res.status(500).send('Error processing callback');
     }
   });
