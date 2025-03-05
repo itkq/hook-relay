@@ -11,7 +11,7 @@ interface CLIOptions {
   logLevel: LogLevel;
   serverEndpoint: string;
   forwardEndpoint: string;
-  bearerToken?: string;
+  challengePassphrase: string;
   path?: string;
   filterBodyRegex?: string;
   reconnectIntervalMs: number;
@@ -24,24 +24,30 @@ program
   .version(VERSION)
   .requiredOption('--server-endpoint <string>', 'Server endpoint URL')
   .requiredOption('--forward-endpoint <string>', 'Forward endpoint URL')
-  .addOption(new Option('--bearer-token <string>', 'Bearer token').env('BEARER_TOKEN'))
   .option('--path <string>', 'Path to use')
   .option('--log-level <string>', 'Log level', 'info')
   .option('--filter-body-regex <string>', 'Filter body regex')
   .option('--reconnect-interval-ms <number>', 'Reconnect interval in milliseconds', '1000')
   .addOption(new Option('--port <number>', 'Port to listen on').default(3001).env('PORT'))
+  .addOption(new Option('--challenge-passphrase <string>', 'Passphrase for challenge response').env('CHALLENGE_PASSPHRASE'))
   .name("hook-relay-client");
 
 program.parse(process.argv);
 
 const options = program.opts() as CLIOptions;
 
+const logger = createLogger('hook-relay-client', options.logLevel);
+
+if (!options.challengePassphrase) {
+  logger.error('Challenge passphrase is required');
+  program.help();
+}
+
 const sleepMs = (ms: number): Promise<void> =>
   new Promise(resolve => {
     setTimeout(resolve, ms);
   });
 
-const logger = createLogger('hook-relay-client', options.logLevel);
 const clientId = crypto.randomUUID();
 
 const app = express();
@@ -85,7 +91,7 @@ process.on('SIGTERM', () => {
       await connectWebSocket({
         clientId,
         logger,
-        bearerToken: options.bearerToken,
+        challengePassphrase: options.challengePassphrase,
         serverEndpoint: options.serverEndpoint,
         forwardEndpoint: options.forwardEndpoint,
         path: options.path,
@@ -95,8 +101,13 @@ process.on('SIGTERM', () => {
         break;
       }
       logger.info("Attempting to reconnect...");
-    } catch (err) {
-      logger.error(err, "Connection terminated due to error");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        logger.error("Connection terminated due to error", err.message);
+        logger.debug(err.stack);
+      } else {
+        logger.error("Connection terminated due to error", err);
+      }
       process.exit(1);
     }
     await sleepMs(options.reconnectIntervalMs);

@@ -1,4 +1,3 @@
-import { getAuthenticator } from './authenticator';
 import { createServer } from './server';
 import { Command, Option } from 'commander';
 import { createLogger, LogLevel } from '../logger';
@@ -6,7 +5,7 @@ import { VERSION } from '../version';
 
 interface CLIOptions {
   port?: number;
-  bearerToken?: string;
+  challengePassphrase: string;
   logLevel?: LogLevel;
 }
 
@@ -14,18 +13,21 @@ const program = new Command();
 program
   .version(VERSION)
   .addOption(new Option('--port <number>', 'Port to listen on').default(3000).env('PORT'))
-  .addOption(new Option('--bearer-token <string>', 'Bearer token').env('BEARER_TOKEN'))
-  .option('--log-level <string>', 'Log level', 'info')
+  .addOption(new Option('--challenge-passphrase <string>', 'Passphrase for challenge response').env('CHALLENGE_PASSPHRASE'))
+  .addOption(new Option('--log-level <string>', 'Log level').default('info').env('LOG_LEVEL'))
   .name("hook-relay-server");
 
 program.parse(process.argv);
 
 const options = program.opts() as CLIOptions;
-const authenticator = options.bearerToken ? getAuthenticator('bearer-token', { token: options.bearerToken }) : null;
 
 const logger = createLogger('hook-relay-server', options.logLevel);
+if (!options.challengePassphrase) {
+  logger.error('Challenge passphrase is required');
+  program.help();
+}
 
-const { server, shutdown } = createServer(logger, authenticator);
+const { server, shutdown } = createServer(logger, options.challengePassphrase);
 
 server.listen(options.port, () => {
   logger.info(`Server started on port ${options.port}`);
