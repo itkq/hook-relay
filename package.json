@@ -30,7 +30,7 @@
   },
   "author": "Takuya Kosugiyama",
   "license": "MIT",
-  "packageManager": "pnpm@9.15.1+sha256.9e534e70afef06374f6126b44bda5760947135ce16a30aef1010e965fb7e3e3e",
+  "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6",
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
     "@types/js-yaml": "^4.0.9",
