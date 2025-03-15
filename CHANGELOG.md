@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.11](https://github.com/itkq/hook-relay/compare/0.1.10...0.1.11) - 2025-03-15
+- Update dependency axios to v1.8.3 by @renovate in https://github.com/itkq/hook-relay/pull/30
+- Update docker/login-action action to v3.4.0 by @renovate in https://github.com/itkq/hook-relay/pull/32
+
 ## [0.1.10](https://github.com/itkq/hook-relay/compare/0.1.9...0.1.10) - 2025-03-10
 - Update README by @itkq in https://github.com/itkq/hook-relay/pull/11
 - Configure Renovate by @renovate in https://github.com/itkq/hook-relay/pull/13
