@@ -9,7 +9,7 @@ checksum:
     - linux
 registries:
   - type: standard
-    ref: v4.284.1 # renovate: depName=aquaproj/aqua-registry
+    ref: v4.327.0 # renovate: depName=aquaproj/aqua-registry
 packages:
   - name: nodejs/node@v22.11.0
   - name: pnpm/pnpm@v10.1.0
