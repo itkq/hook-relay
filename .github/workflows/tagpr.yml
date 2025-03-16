@@ -1,5 +1,7 @@
 name: tagpr
 
+permissions: {}
+
 on:
   push:
     branches: ["main"]
@@ -9,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    timeout-minutes: 20
     steps:
     - uses: actions/create-github-app-token@21cfef2b496dd8ef5b904c159339626a10ad380e # v1.11.6
       id: app-token
@@ -18,6 +21,7 @@ jobs:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         token: ${{ steps.app-token.outputs.token }}
+        persist-credentials: false
     - uses: Songmu/tagpr@e89d37247ca73d3e5620bf074a53fbd5b39e66b0 # v1.5.1
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
