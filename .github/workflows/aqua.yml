@@ -1,13 +1,17 @@
-name: tagpr
+name: aqua
 
 permissions: {}
 
 on:
-  push:
+  pull_request:
     branches: ["main"]
+    paths:
+      - aqua.yaml
+      - aqua-checksums.json
+      - .github/workflows/aqua.yaml
 
 jobs:
-  tagpr:
+  aqua:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,6 +26,11 @@ jobs:
       with:
         token: ${{ steps.app-token.outputs.token }}
         persist-credentials: false
-    - uses: Songmu/tagpr@e89d37247ca73d3e5620bf074a53fbd5b39e66b0 # v1.5.1
+    - uses: aquaproj/aqua-installer@e2d0136abcf70b7a2f6f505720640750557c4b33 # v3.1.1
+      with:
+        aqua_version: v2.45.1
+    - uses: aquaproj/update-checksum-action@2fb7f676d407d4fb8c2c466c19d09d3ddec4f82f # v0.2.2
+      with:
+        prune: true
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
