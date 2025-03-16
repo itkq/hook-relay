@@ -11,6 +11,6 @@ registries:
   - type: standard
     ref: v4.327.0 # renovate: depName=aquaproj/aqua-registry
 packages:
-  - name: nodejs/node@v22.11.0
+  - name: nodejs/node@v23.10.0
   - name: pnpm/pnpm@v10.1.0
   - name: Songmu/tagpr@v1.5.1
