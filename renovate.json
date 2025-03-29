@@ -10,8 +10,10 @@
       "matchPackageNames": ["aquaproj/aqua-registry"]
     },
     {
-      "matchPackageNames": ["pnpm/pnpm", "@types/node", "nodejs/node"],
-      "allowedUpdateTypes": ["minor", "major"]
+      "description": "Allow only minor and major updates for pnpm/pnpm, @types/node, nodejs/node",
+      "matchDepNames": ["pnpm/pnpm", "@types/node", "nodejs/node"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
     }
   ]
 }
