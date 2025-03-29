@@ -3,5 +3,15 @@
   "extends": [
     "config:recommended",
     "github>aquaproj/aqua-renovate-config#2.7.5"
+  ],
+  "packageRules": [
+    {
+      "enabled": false,
+      "matchPackageNames": ["aquaproj/aqua-registry"]
+    },
+    {
+      "matchPackageNames": ["pnpm/pnpm", "@types/node", "nodejs/node"],
+      "allowedUpdateTypes": ["minor", "major"]
+    }
   ]
 }
