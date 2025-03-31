@@ -40,11 +40,11 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@types/express": "4.17.21",
+    "@types/express": "5.0.1",
     "async-mutex": "^0.5.0",
     "axios": "^1.7.9",
     "commander": "^13.1.0",
-    "express": "4.21.2",
+    "express": "5.1.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "ws": "^8.18.1"
