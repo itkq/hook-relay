@@ -1,6 +1,6 @@
 {
   "name": "hook-relay",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Relay for webhook events",
   "main": "dist/server/index.js",
   "bin": {
