@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.12](https://github.com/itkq/hook-relay/compare/0.1.11...0.1.12) - 2025-05-08
+- chore(deps): update dependency nodejs/node to v22.15.0 by @renovate in https://github.com/itkq/hook-relay/pull/66
+- Fix to encode base64 by @itkq in https://github.com/itkq/hook-relay/pull/72
+
 ## [0.1.11](https://github.com/itkq/hook-relay/compare/0.1.10...0.1.11) - 2025-05-06
 - Update dependency axios to v1.8.3 by @renovate in https://github.com/itkq/hook-relay/pull/30
 - Update docker/login-action action to v3.4.0 by @renovate in https://github.com/itkq/hook-relay/pull/32
