@@ -82,22 +82,22 @@ export async function connectWebSocket({
               url.searchParams.set(key, value);
             }
           }
+          const decodedBody = Buffer.from(message.rawBody, 'base64');
           const req = {
             method: message.method,
             url: url.toString(),
             headers: message.headers,
-            data: message.rawBody,
+            data: decodedBody,
+            responseType: 'arraybuffer' as const,
           };
-          logger.debug(`request: ${JSON.stringify(req)}`);
 
           const response = await axios({
             ...req,
-            validateStatus: (_status) => true, // do not throw for any status code
-            maxRedirects: 0, // TODO: parameterize
+            validateStatus: (_status) => true,
+            maxRedirects: 0,
           });
           logger.debug(`response status: ${response.status}`);
-          logger.debug(`response headers: ${response.headers}`);
-          logger.debug(`response data: ${JSON.stringify(response.data)}`);
+          logger.debug(`response headers: ${JSON.stringify(response.headers)}`);
           const responseData: WebSocketHTTPResponse = {
             kind: 'http',
             clientId,

@@ -25,7 +25,7 @@ program
   .requiredOption('--server-endpoint <string>', 'Server endpoint URL')
   .requiredOption('--forward-endpoint <string>', 'Forward endpoint URL')
   .option('--path <string>', 'Path to use')
-  .option('--log-level <string>', 'Log level', 'info')
+  .addOption(new Option('--log-level <string>', 'Log level').default('info').env('LOG_LEVEL'))
   .option('--filter-body-regex <string>', 'Filter body regex')
   .option('--reconnect-interval-ms <number>', 'Reconnect interval in milliseconds', '1000')
   .addOption(new Option('--port <number>', 'Port to listen on').default(3001).env('PORT'))
