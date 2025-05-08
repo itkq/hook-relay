@@ -52,7 +52,8 @@ interface OneshotCallbacks {
 
 function filterMessage(message: WebSocketHTTPMessage, ws: ExtendedWebSocket): boolean {
   if (ws.filterBodyRegex) {
-    return ws.filterBodyRegex.test(message.rawBody);
+    const decodedBody = Buffer.from(message.rawBody, 'base64').toString();
+    return ws.filterBodyRegex.test(decodedBody);
   }
   return true;
 }
@@ -231,12 +232,13 @@ export function createServer(logger: Logger, challengePassphrase: string): {
     req: Request,
     res: Response,
   ) => {
-    let rawBody = '';
+    const chunks: Buffer[] = [];
 
     req.on('data', (chunk) => {
-      rawBody += chunk;
+      chunks.push(Buffer.from(chunk));
     });
     req.on('end', async () => {
+      const rawBody = Buffer.concat(chunks);
       const requestPath = req.path.replace(/^\/hook/, '');
       const messageId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
       logger.info(`Received ${req.method} ${req.path} as message:${messageId}`);
@@ -244,7 +246,7 @@ export function createServer(logger: Logger, challengePassphrase: string): {
         kind: 'http',
         messageId,
         headers: req.headers,
-        rawBody: rawBody,
+        rawBody: rawBody.toString('base64'),
         method: req.method,
         path: requestPath,
       };
