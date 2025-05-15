@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.14](https://github.com/itkq/hook-relay/compare/0.1.13...0.1.14) - 2025-05-15
+- chore(deps): update dependency aquaproj/aqua to v2.51.2 by @renovate in https://github.com/itkq/hook-relay/pull/75
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.8.0 - autoclosed by @renovate in https://github.com/itkq/hook-relay/pull/76
+- chore(deps): update docker/build-push-action action to v6.17.0 by @renovate in https://github.com/itkq/hook-relay/pull/78
+
 ## [0.1.13](https://github.com/itkq/hook-relay/compare/0.1.12...0.1.13) - 2025-05-08
 - Fix to publish npm by @itkq in https://github.com/itkq/hook-relay/pull/73
 
