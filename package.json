@@ -43,7 +43,7 @@
     "@types/express": "4.17.21",
     "async-mutex": "^0.5.0",
     "axios": "^1.7.9",
-    "commander": "^13.1.0",
+    "commander": "^14.0.0",
     "express": "4.21.2",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
