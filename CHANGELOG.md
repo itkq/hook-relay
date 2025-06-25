@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.14](https://github.com/itkq/hook-relay/compare/0.1.13...0.1.14) - 2025-06-25
+- chore(deps): update dependency aquaproj/aqua to v2.51.2 by @renovate in https://github.com/itkq/hook-relay/pull/75
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.8.0 - autoclosed by @renovate in https://github.com/itkq/hook-relay/pull/76
+- chore(deps): update docker/build-push-action action to v6.17.0 - autoclosed by @renovate in https://github.com/itkq/hook-relay/pull/78
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.8.1 by @renovate in https://github.com/itkq/hook-relay/pull/87
+- chore(deps): update docker/build-push-action action to v6.18.0 - autoclosed by @renovate in https://github.com/itkq/hook-relay/pull/86
+- fix(deps): update dependency @types/express to v4.17.23 by @renovate in https://github.com/itkq/hook-relay/pull/81
+- chore(deps): update dependency aquaproj/aqua to v2.53.2 by @renovate in https://github.com/itkq/hook-relay/pull/89
+- fix(deps): update dependency pino to v9.7.0 by @renovate in https://github.com/itkq/hook-relay/pull/84
+- fix(deps): update dependency commander to v14 by @renovate in https://github.com/itkq/hook-relay/pull/83
+- chore(deps): update dependency @types/body-parser to v1.19.6 by @renovate in https://github.com/itkq/hook-relay/pull/88
+- fix(deps): update dependency axios to v1.10.0 by @renovate in https://github.com/itkq/hook-relay/pull/91
+- chore(deps): update dependency aquaproj/aqua to v2.53.3 by @renovate in https://github.com/itkq/hook-relay/pull/94
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.8.2 by @renovate in https://github.com/itkq/hook-relay/pull/93
+- chore(deps): update aquaproj/aqua-installer action to v4 by @renovate in https://github.com/itkq/hook-relay/pull/82
+
 ## [0.1.13](https://github.com/itkq/hook-relay/compare/0.1.12...0.1.13) - 2025-05-08
 - Fix to publish npm by @itkq in https://github.com/itkq/hook-relay/pull/73
 
