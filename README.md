@@ -59,6 +59,31 @@ $ curl -H 'content-type: application/json' \
 {"callbackUrl":"http://localhost:3000/callback/oneshot/auth/redirect"}
 ```
 
+## Security Considerations
+
+### HTTPS/WSS Usage
+
+For production environments, it is strongly recommended to use HTTPS/WSS for all communications:
+
+- **Server**: Deploy behind a reverse proxy (nginx, Caddy, etc.) with SSL/TLS termination
+- **Client**: Connect using `wss://` protocol instead of `ws://`
+
+Example with HTTPS/WSS:
+```bash
+# Server (behind HTTPS reverse proxy)
+hook-relay-server --port 3000 --challenge-passphrase $SECRET_PASSPHRASE
+
+# Client (connecting via WSS)
+hook-relay-client --server-endpoint wss://your-domain.com --forward-endpoint http://localhost:9000 --challenge-passphrase $SECRET_PASSPHRASE
+```
+
+### Additional Security Notes
+
+- Always use a strong, randomly generated challenge passphrase
+- Limit access to the server using firewall rules or network policies
+- Consider implementing rate limiting for production use
+- Monitor logs for suspicious activity
+
 ## License
 
 [MIT](LICENSE)
