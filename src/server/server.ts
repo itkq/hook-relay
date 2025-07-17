@@ -7,6 +7,7 @@ import { isWebSocketHTTPResponse, isWebSocketErrorResponse, WebSocketResponse, W
 import { Mutex } from 'async-mutex';
 import { Logger } from 'pino';
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
+import safeRegex from 'safe-regex';
 
 interface ExtendedWebSocket extends WebSocket {
   path?: string;
@@ -126,6 +127,11 @@ export function createServer(logger: Logger, challengePassphrase: string): {
     const filterBodyRegexStr = query.get('filterBodyRegex');
     if (filterBodyRegexStr) {
       try {
+        if (!safeRegex(filterBodyRegexStr)) {
+          logger.warn(`Unsafe regex pattern rejected: ${filterBodyRegexStr}`);
+          ws.close(4005, 'Unsafe regex pattern');
+          return;
+        }
         ws.filterBodyRegex = new RegExp(filterBodyRegexStr);;
       } catch (e) {
         logger.warn(e, 'Invalid filterBodyRegex, ignored');

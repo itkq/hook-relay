@@ -137,6 +137,9 @@ export async function connectWebSocket({
       } else if (code === 4004) {
         logger.error("No UUID provided, not reconnecting");
         return reject(new Error("No UUID provided"));
+      } else if (code === 4005) {
+        logger.error("Unsafe regex pattern detected, not reconnecting");
+        return reject(new Error("Unsafe regex pattern"));
       }
       logger.info(`Disconnected from the server with code: ${code}`);
       return resolve(clientId);
