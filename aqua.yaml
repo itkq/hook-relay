@@ -13,5 +13,5 @@ registries:
 packages:
   - name: nodejs/node@v22.15.0
   - name: pnpm/pnpm@v10.7.0
-  - name: Songmu/tagpr@v1.5.2
+  - name: Songmu/tagpr@v1.7.0
   - name: int128/ghcp@v1.15.0 # for aquaproj/update-checksum-action
