@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/node:22-slim AS builder
+FROM public.ecr.aws/docker/library/node:24-slim AS builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 
 RUN pnpm run build
 
-FROM public.ecr.aws/docker/library/node:22-slim
+FROM public.ecr.aws/docker/library/node:24-slim
 
 WORKDIR /app
 
