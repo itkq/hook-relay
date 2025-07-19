@@ -1,6 +1,6 @@
 {
   "name": "hook-relay",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Relay for webhook events",
   "main": "dist/server/index.js",
   "bin": {
@@ -34,6 +34,7 @@
     "@types/body-parser": "^1.19.5",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.13.5",
+    "@types/safe-regex": "^1.1.6",
     "@types/ws": "^8.5.14",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
@@ -47,6 +48,7 @@
     "express": "4.21.2",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
+    "safe-regex": "^2.1.1",
     "ws": "^8.18.1"
   }
 }

@@ -8,7 +8,7 @@ on:
     paths:
       - aqua.yaml
       - aqua-checksums.json
-      - .github/workflows/aqua.yaml
+      - .github/workflows/aqua.yml
 
 jobs:
   aqua:
@@ -26,7 +26,7 @@ jobs:
       with:
         token: ${{ steps.app-token.outputs.token }}
         persist-credentials: false
-    - uses: aquaproj/aqua-installer@e2d0136abcf70b7a2f6f505720640750557c4b33 # v3.1.1
+    - uses: aquaproj/aqua-installer@d1fe50798dbadd4eb5b98957290ca175f6b4870f # v4.0.2
       with:
         aqua_version: v2.53.4
     - uses: aquaproj/update-checksum-action@2fb7f676d407d4fb8c2c466c19d09d3ddec4f82f # v0.2.2

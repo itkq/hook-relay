@@ -6,6 +6,7 @@ import { createLogger, LogLevel } from '../logger';
 import express, { Request, Response } from 'express';
 import http from 'http';
 import { VERSION } from '../version';
+import safeRegex from 'safe-regex';
 
 interface CLIOptions {
   logLevel: LogLevel;
@@ -41,6 +42,13 @@ const logger = createLogger('hook-relay-client', options.logLevel);
 if (!options.challengePassphrase) {
   logger.error('Challenge passphrase is required');
   program.help();
+}
+
+if (options.filterBodyRegex) {
+  if (!safeRegex(options.filterBodyRegex)) {
+    logger.error('Unsafe regex pattern provided. This pattern could cause performance issues.');
+    process.exit(1);
+  }
 }
 
 const sleepMs = (ms: number): Promise<void> =>
