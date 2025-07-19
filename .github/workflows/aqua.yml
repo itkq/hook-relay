@@ -8,7 +8,7 @@ on:
     paths:
       - aqua.yaml
       - aqua-checksums.json
-      - .github/workflows/aqua.yaml
+      - .github/workflows/aqua.yml
 
 jobs:
   aqua:
