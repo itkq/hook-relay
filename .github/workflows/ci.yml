@@ -45,17 +45,6 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Run tests with coverage
-        run: pnpm test:coverage
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
   build:
     runs-on: ubuntu-latest
     permissions:
