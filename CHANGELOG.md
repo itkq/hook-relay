@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.15](https://github.com/itkq/hook-relay/compare/0.1.14...0.1.15) - 2025-08-04
+- Bump aquaproj/aqua-installer by @itkq in https://github.com/itkq/hook-relay/pull/102
+- chore(deps): update dependency int128/ghcp to v1.15.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/90
+- chore(deps): update dependency songmu/tagpr to v1.7.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/77
+- chore(deps): update dependency aquaproj/aqua to v2.53.5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/99
+- chore(deps): update dependency pnpm/pnpm to v10.13.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/80
+- ci: Test docker build by @itkq in https://github.com/itkq/hook-relay/pull/104
+- chore(deps): update dependency nodejs/node to v24 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/70
+- chore(deps): update dependency @types/node to v22.16.5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/97
+- Add test by @itkq in https://github.com/itkq/hook-relay/pull/105
+- chore(deps): update codecov/codecov-action action to v5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/106
+- Disable coverage by @itkq in https://github.com/itkq/hook-relay/pull/107
+- fix: クライアント側でaxiosのレスポンス（arraybuffer）をそのままJSONに含めて送信していた by @mosasiru in https://github.com/itkq/hook-relay/pull/117
+
 ## [0.1.14](https://github.com/itkq/hook-relay/compare/0.1.13...0.1.14) - 2025-07-17
 - chore(deps): update dependency aquaproj/aqua to v2.51.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/75
 - chore(deps): update dependency aquaproj/aqua-renovate-config to v2.8.0 - autoclosed by @renovate[bot] in https://github.com/itkq/hook-relay/pull/76
