@@ -104,7 +104,7 @@ export async function connectWebSocket({
             messageId: message.messageId,
             headers: response.headers as IncomingHttpHeaders,
             status: response.status,
-            body: response.data,
+            body: Buffer.from(response.data).toString('base64'),
           };
           ws.send(JSON.stringify(responseData));
           logger.info(`${message.method} ${message.path} -> ${responseData.status} sent to server (message:${responseData.messageId})`);

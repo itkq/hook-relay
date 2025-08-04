@@ -299,7 +299,8 @@ export function createServer(logger: Logger, challengePassphrase: string): {
             }
           }
           logger.info(`Responded ${responseData.status} (message:${message.messageId} by client:${clientId})`);
-          return res.status(responseData.status).send(responseData.body);
+          const bodyBuffer = Buffer.from(responseData.body, 'base64');
+          return res.status(responseData.status).send(bodyBuffer);
         }
         if (isWebSocketErrorResponse(responseData)) {
           logger.error(`Responded 500 ${responseData.error} (message:${message.messageId} by client:${clientId})`);
