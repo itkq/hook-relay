@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.16](https://github.com/itkq/hook-relay/compare/0.1.15...0.1.16) - 2025-08-16
+- chore(deps): update dependency aquaproj/aqua to v2.53.9 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/108
+- chore(deps): update dependency typescript to v5.9.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/116
+- chore(deps): update dependency pnpm/pnpm to v10.14.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/114
+- fix(deps): update dependency pino-pretty to v13.1.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/113
+- fix(deps): update dependency axios to v1.11.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/111
+- fix(deps): update dependency ws to v8.18.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/96
+- chore(deps): update dependency ts-jest to v29.4.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/120
+- chore(deps): update actions/cache action to v4.2.4 - autoclosed by @renovate[bot] in https://github.com/itkq/hook-relay/pull/119
+- chore(deps): update dependency supertest to v7.1.4 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/110
+- ci: Use trusted publishing by @itkq in https://github.com/itkq/hook-relay/pull/121
+- chore(deps): update actions/create-github-app-token action to v2.1.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/123
+- chore(deps): update actions/checkout action to v4.3.0 - autoclosed by @renovate[bot] in https://github.com/itkq/hook-relay/pull/122
+- chore(deps): update dependency @types/node to v22.17.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/112
+
 ## [0.1.15](https://github.com/itkq/hook-relay/compare/0.1.14...0.1.15) - 2025-08-04
 - Bump aquaproj/aqua-installer by @itkq in https://github.com/itkq/hook-relay/pull/102
 - chore(deps): update dependency int128/ghcp to v1.15.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/90
