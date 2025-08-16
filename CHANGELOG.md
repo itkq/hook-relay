@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.1.17](https://github.com/itkq/hook-relay/compare/0.1.16...0.1.17) - 2025-08-16
+- ci: Fix trusted publising by @itkq in https://github.com/itkq/hook-relay/pull/124
+
 ## [0.1.16](https://github.com/itkq/hook-relay/compare/0.1.15...0.1.16) - 2025-08-16
 - chore(deps): update dependency aquaproj/aqua to v2.53.9 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/108
 - chore(deps): update dependency typescript to v5.9.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/116
