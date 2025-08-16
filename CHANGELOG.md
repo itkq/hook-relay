@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.1.18](https://github.com/itkq/hook-relay/compare/0.1.17...0.1.18) - 2025-08-16
+- ci: Install npm@latest by @itkq in https://github.com/itkq/hook-relay/pull/127
+
 ## [0.1.17](https://github.com/itkq/hook-relay/compare/0.1.16...0.1.17) - 2025-08-16
 - ci: Fix trusted publising by @itkq in https://github.com/itkq/hook-relay/pull/124
 
