@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.19](https://github.com/itkq/hook-relay/compare/0.1.18...0.1.19) - 2025-09-05
+- chore(deps): update docker/metadata-action action to v5.8.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/130
+- chore(deps): update docker/login-action action to v3.5.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/129
+- chore(deps): update dependency jest to v30.0.5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/109
+- chore(deps): update actions/checkout action to v5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/133
+- chore(deps): update actions/download-artifact action to v5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/134
+- chore(tagpr): release = draft by @itkq in https://github.com/itkq/hook-relay/pull/138
+- chore(deps): update dependency songmu/tagpr to v1.7.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/139
+
 ## [0.1.18](https://github.com/itkq/hook-relay/compare/0.1.17...0.1.18) - 2025-08-16
 - ci: Install npm@latest by @itkq in https://github.com/itkq/hook-relay/pull/127
 
