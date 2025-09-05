@@ -2,3 +2,4 @@
 	releaseBranch = main
 	versionFile = package.json,src/version.ts
 	vPrefix = false
+	release = draft
