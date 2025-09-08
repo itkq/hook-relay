@@ -22,6 +22,6 @@ jobs:
       with:
         token: ${{ steps.app-token.outputs.token }}
         # persist-credentials: false
-    - uses: Songmu/tagpr@5f88955ce2b34f19868a8c9cbe3baf6b73176f7b # v1.7.2
+    - uses: Songmu/tagpr@c2854e02d3e7fb81316a5f32bbf301f89eb2752b # v1.8.1
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
