@@ -38,11 +38,19 @@ describe('server', () => {
       });
     });
 
-    describe('POST /hook/*', () => {
-      it('should return 404 when no client is connected', async () => {
+    describe('HTTP /hook/*', () => {
+      it('should return 404 when no client is connected (POST)', async () => {
         const response = await request(server)
           .post('/hook/test-path')
           .send({ test: 'data' })
+          .expect(404);
+        
+        expect(response.text).toContain('No matching client found');
+      });
+
+      it('should return 404 when no client is connected (OPTIONS)', async () => {
+        const response = await request(server)
+          .options('/hook/test-path')
           .expect(404);
         
         expect(response.text).toContain('No matching client found');
@@ -83,6 +91,51 @@ describe('server', () => {
               headers: { 'content-type': 'application/json' },
               status: 200,
               body: JSON.stringify({ received: true }),
+            };
+            ws.send(JSON.stringify(response));
+            
+            setTimeout(() => {
+              ws.close();
+              done();
+            }, 100);
+          }
+        });
+      });
+
+      it('should relay OPTIONS request to connected client', (done) => {
+        const ws = new WebSocket(`ws://localhost:${port}?clientId=test-client`);
+        
+        ws.on('message', (data) => {
+          const message = JSON.parse(data.toString());
+          
+          if (message.kind === 'challenge') {
+            const challengeMessage = message as WebSocketChallengeMessage;
+            const hmac = createHmac('sha256', challengePassphrase)
+              .update(challengeMessage.nonce)
+              .digest('hex');
+            
+            const response: WebSocketChallengeResponse = {
+              kind: 'challenge-response',
+              clientId: 'test-client',
+              hmac,
+            };
+            ws.send(JSON.stringify(response));
+          } else if (message.kind === 'challenge-result' && message.success) {
+            request(server)
+              .options('/hook/test-path')
+              .end(() => {});
+          } else if (message.kind === 'http') {
+            const httpMessage = message as WebSocketHTTPMessage;
+            expect(httpMessage.path).toBe('/test-path');
+            expect(httpMessage.method).toBe('OPTIONS');
+            
+            const response: WebSocketHTTPResponse = {
+              kind: 'http',
+              clientId: 'test-client',
+              messageId: httpMessage.messageId,
+              headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS' },
+              status: 200,
+              body: '',
             };
             ws.send(JSON.stringify(response));
             
