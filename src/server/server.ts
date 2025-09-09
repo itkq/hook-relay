@@ -234,7 +234,7 @@ export function createServer(logger: Logger, challengePassphrase: string): {
     });
   });
 
-  app.post('/hook/*', async (
+  const hookHandler = async (
     req: Request,
     res: Response,
   ) => {
@@ -315,7 +315,10 @@ export function createServer(logger: Logger, challengePassphrase: string): {
       logger.error(err, 'Error while receiving data');
       res.status(500).send('Error receiving data');
     });
-  });
+  };
+
+  app.post('/hook/*', hookHandler);
+  app.options('/hook/*', hookHandler);
 
   const CALLBACK_REGISTRATION_EXPIRATION_MS = 30 * 1000; // 30 seconds
   app.post('/callback/oneshot/register', express.json(), async (req: Request, res: Response) => {
