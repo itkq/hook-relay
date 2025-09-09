@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.19](https://github.com/itkq/hook-relay/compare/0.1.18...0.1.19) - 2025-09-09
+- chore(deps): update docker/metadata-action action to v5.8.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/130
+- chore(deps): update docker/login-action action to v3.5.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/129
+- chore(deps): update dependency jest to v30.0.5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/109
+- chore(deps): update actions/checkout action to v5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/133
+- chore(deps): update actions/download-artifact action to v5 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/134
+- chore(tagpr): release = draft by @itkq in https://github.com/itkq/hook-relay/pull/138
+- chore(deps): update dependency songmu/tagpr to v1.7.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/139
+- chore(deps): update dependency aquaproj/aqua to v2.53.11 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/141
+- chore(deps): update aquaproj/aqua-installer action to v4.0.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/140
+- chore(deps): update dependency songmu/tagpr to v1.8.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/143
+- chore(deps): update dependency songmu/tagpr to v1.8.4 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/145
+- chore(deps): update dependency songmu/tagpr to v1.9.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/146
+- Support options request for CORS pre-flight by @itkq in https://github.com/itkq/hook-relay/pull/147
+
 ## [0.1.18](https://github.com/itkq/hook-relay/compare/0.1.17...0.1.18) - 2025-08-16
 - ci: Install npm@latest by @itkq in https://github.com/itkq/hook-relay/pull/127
 
