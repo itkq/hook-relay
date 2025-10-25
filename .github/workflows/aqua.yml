@@ -28,7 +28,7 @@ jobs:
         persist-credentials: false
     - uses: aquaproj/aqua-installer@d1fe50798dbadd4eb5b98957290ca175f6b4870f # v4.0.2
       with:
-        aqua_version: v2.53.11
+        aqua_version: v2.55.1
     - uses: aquaproj/update-checksum-action@2fb7f676d407d4fb8c2c466c19d09d3ddec4f82f # v0.2.2
       with:
         prune: true
