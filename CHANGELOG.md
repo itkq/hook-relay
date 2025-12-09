@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.20](https://github.com/itkq/hook-relay/compare/0.1.19...0.1.20) - 2025-12-09
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.9.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/152
+- chore(deps): update dependency aquaproj/aqua to v2.55.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/150
+- chore(deps): update actions/create-github-app-token action to v2.1.4 - autoclosed by @renovate[bot] in https://github.com/itkq/hook-relay/pull/148
+- chore(deps): update dependency int128/ghcp to v1.15.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/154
+- chore(deps): update dependency jest to v30.2.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/137
+- chore(deps): update actions/checkout action to v5.0.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/158
+- chore(deps): update dependency ts-jest to v29.4.6 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/156
+- chore(deps): update dependency typescript to v5.9.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/157
+
 ## [0.1.19](https://github.com/itkq/hook-relay/compare/0.1.18...0.1.19) - 2025-09-09
 - chore(deps): update docker/metadata-action action to v5.8.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/130
 - chore(deps): update docker/login-action action to v3.5.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/129
