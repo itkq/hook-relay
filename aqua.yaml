@@ -12,6 +12,6 @@ registries:
     ref: v4.331.0 # renovate: depName=aquaproj/aqua-registry
 packages:
   - name: nodejs/node@v24.4.1
-  - name: pnpm/pnpm@v10.14.0
+  - name: pnpm/pnpm@v10.25.0
   - name: Songmu/tagpr@v1.9.0
   - name: int128/ghcp@v1.15.1 # for aquaproj/update-checksum-action
