@@ -1,23 +1,23 @@
 {
   "checksums": [
     {
-      "id": "github_release/github.com/Songmu/tagpr/v1.17.1/tagpr_v1.17.1_darwin_amd64.zip",
-      "checksum": "EF8188B3155769A0861CF1C626B0C53CC989F5811172C047D82B4BD723FA90E7",
+      "id": "github_release/github.com/Songmu/tagpr/v1.18.3/tagpr_v1.18.3_darwin_amd64.zip",
+      "checksum": "6C8A504DF85FBA300E21D24B8AD27F6698FDFD1621A2B304BC95D17AE00D16F2",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/Songmu/tagpr/v1.17.1/tagpr_v1.17.1_darwin_arm64.zip",
-      "checksum": "CEF4725DCC908F90DC4B98906D5532A09453E9089D35479FEC56DE38484797A4",
+      "id": "github_release/github.com/Songmu/tagpr/v1.18.3/tagpr_v1.18.3_darwin_arm64.zip",
+      "checksum": "D0177ADA32CB10D18CBFEADCF6E470A5757CC915A35A8879D492F579958DC6C1",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/Songmu/tagpr/v1.17.1/tagpr_v1.17.1_linux_amd64.tar.gz",
-      "checksum": "D202F015A05537ADDAD852F6F617731E76A2B121B8C97ABC9A6F9BE0A58F1311",
+      "id": "github_release/github.com/Songmu/tagpr/v1.18.3/tagpr_v1.18.3_linux_amd64.tar.gz",
+      "checksum": "3E5F132A9C457D36DEFD5686CD6A3A1C1D347A1DDA842093843116370C2C5BED",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/Songmu/tagpr/v1.17.1/tagpr_v1.17.1_linux_arm64.tar.gz",
-      "checksum": "9778105B1F0823BF5770D0E389CB50B27B032032A6D4B5179ABA31D708525641",
+      "id": "github_release/github.com/Songmu/tagpr/v1.18.3/tagpr_v1.18.3_linux_arm64.tar.gz",
+      "checksum": "80D721BCF474694E9F693C0B8B104105170C2591BA596068958599EA17048D7D",
       "algorithm": "sha256"
     },
     {
