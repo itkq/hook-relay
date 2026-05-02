@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.1.20](https://github.com/itkq/hook-relay/compare/0.1.19...0.1.20) - 2026-05-02
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.9.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/152
+- chore(deps): update dependency aquaproj/aqua to v2.55.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/150
+- chore(deps): update actions/create-github-app-token action to v2.1.4 - autoclosed by @renovate[bot] in https://github.com/itkq/hook-relay/pull/148
+- chore(deps): update dependency int128/ghcp to v1.15.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/154
+- chore(deps): update dependency jest to v30.2.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/137
+- chore(deps): update actions/checkout action to v5.0.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/158
+- chore(deps): update dependency ts-jest to v29.4.6 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/156
+- chore(deps): update dependency typescript to v5.9.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/157
+- chore(deps): update actions/checkout action to v6 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/166
+- chore(deps): update docker/setup-qemu-action action to v3.7.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/165
+- chore(deps): update docker/metadata-action action to v5.10.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/164
+- chore(deps): update docker/login-action action to v3.7.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/163
+- chore(deps): update actions/create-github-app-token action to v2.2.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/162
+- chore(deps): update actions/cache action to v4.3.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/161
+- chore(deps): update aquaproj/aqua-installer action to v4.0.4 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/159
+- chore(deps): update dependency aquaproj/aqua to v2.56.7 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/160
+- chore(deps): update dependency pino-pretty to v13.1.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/155
+- chore(deps): update dependency axios to v1.13.6 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/151
+- chore(deps): update dependency commander to v14.0.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/149
+- chore(deps): update dependency @types/node to v22.19.15 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/136
+- chore(deps): update dependency pnpm/pnpm to v10.25.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/135
+- chore(deps): update dependency ws to v8.20.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/174
+- chore(deps): update dependency supertest to v7.2.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/173
+- chore(deps): update dependency songmu/tagpr to v1.17.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/172
+- chore(deps): update dependency jest to v30.3.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/170
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.12.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/169
+- chore(deps): update actions/create-github-app-token action to v2.2.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/175
+- chore(deps): update dependency int128/ghcp to v1.15.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/167
+- chore(deps): update dependency nodemon to v3.1.14 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/168
+- chore(deps): update dependency pnpm/pnpm to v10.32.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/171
+- chore(deps): update dependency ts-jest to v29.4.9 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/176
+- chore(deps): update dependency int128/ghcp to v1.15.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/177
+- chore(deps): update dependency aquaproj/aqua to v2.57.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/178
+- chore(deps): update dependency songmu/tagpr to v1.18.3 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/181
+- chore(deps): update docker/setup-buildx-action action to v3.12.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/183
+- chore(deps): update docker/build-push-action action to v6.19.2 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/182
+
 ## [0.1.19](https://github.com/itkq/hook-relay/compare/0.1.18...0.1.19) - 2025-09-09
 - chore(deps): update docker/metadata-action action to v5.8.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/130
 - chore(deps): update docker/login-action action to v3.5.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/129
