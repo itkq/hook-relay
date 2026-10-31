@@ -87,3 +87,5 @@ hook-relay-client --server-endpoint wss://your-domain.com --forward-endpoint htt
 ## License
 
 [MIT](LICENSE)
+
+<!-- test-haro: HARO-210 の動作確認 -->
