@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.1.21](https://github.com/itkq/hook-relay/compare/0.1.20...0.1.21) - 2026-11-01
+- ci: introduce GitHub Actions workflow lockfile by @itkq in https://github.com/itkq/hook-relay/pull/195
+
 ## [0.1.20](https://github.com/itkq/hook-relay/compare/0.1.19...0.1.20) - 2026-10-30
 - chore(deps): update dependency aquaproj/aqua-renovate-config to v2.9.0 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/152
 - chore(deps): update dependency aquaproj/aqua to v2.55.1 by @renovate[bot] in https://github.com/itkq/hook-relay/pull/150
