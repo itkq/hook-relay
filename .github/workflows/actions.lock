@@ -21,7 +21,7 @@ workflows:
         - 'docker/setup-qemu-action@v3.7.0'
     '.github/workflows/tagpr.yml':
         - 'actions/checkout@v6.0.2'
-        - 'actions/create-github-app-token@v2.2.2'
+        - 'actions/create-github-app-token@v3.3.0'
         - 'songmu/tagpr@v1.18.3'
     '.github/workflows/verify-lockfile.yml':
         - 'actions/checkout@v6.0.2'
@@ -46,9 +46,9 @@ dependencies:
         commit: 'sha1-21cfef2b496dd8ef5b904c159339626a10ad380e'
         owner_id: 44036562
         repo_id: 642580244
-    'actions/create-github-app-token@v2.2.2':
-        ref: 'v2.2.2'
-        commit: 'sha1-fee1f7d63c2ff003460e3d139729b119787bc349'
+    'actions/create-github-app-token@v3.3.0':
+        ref: 'v3.3.0'
+        commit: 'sha1-64ab729a6294000f5aa4a4bc0b73d1f32bc45510'
         owner_id: 44036562
         repo_id: 642580244
     'actions/download-artifact@v5.0.0':
